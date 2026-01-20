@@ -59,15 +59,14 @@ function full_main()
     };
 
     % Location
-    location = 'Texas'; % [CA, NY, MN, TX]
+    location = 'California'; % [CA, NY, MN, TX]
     
     % Years to process
     years = 1:10;
     
     % IRR vectors for 10 years
-    irr_high = [0.12, 0.13, 0.11, 0.14, 0.10, 0.15, 0.12, 0.11, 0.09, 0.08];  
     irr_mod = [0.10, 0.09, 0.08, 0.10, 0.09, 0.11, 0.10, 0.09, 0.07, 0.06];  
-    irr_low = [0.07, 0.06, 0.05, 0.06, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03];
+    
     
     irr_vectors = {irr_mod}; % {irr_high, irr_mod, irr_low}; one for now 
     irr_names = {'Moderate'}; % {'High', 'Moderate', 'Low'}; one for now
@@ -107,8 +106,8 @@ function full_main()
     residential_mix_names = {'9of9_Res', '6of9_Res', '3of9_Res'};
     
     % IL fraction values
-    ilF_res_values = [0.1]; 
-    ilF_com_values = [0.5]; 
+    ilF_res_values = 0.1; 
+    ilF_com_values = 0.5; 
     
     % IL scale values
     p_ilM_scales = [0.05, 0.1, 0.3];
@@ -117,7 +116,7 @@ function full_main()
     peak_values = [0.01, 0.1, 1, 10];
     
     % Create the consolidated output file
-    consolidated_filename = 'simple_full_TX.csv';
+    consolidated_filename = 'simple_full_CA_v2.csv';
     fid = fopen(consolidated_filename, 'w');
     
     % Write header for consolidated CSV
@@ -330,14 +329,14 @@ function full_main()
                                        T_ref = 25;  % reference temp (C)
                                        % === BATTERY PARAMETERS (identical to simple method) ===
                                         if strcmp(battery_type, 'Li-ion')
-                                            CYCLE_LIFE_80DOD = 4500;
+                                            CYCLE_LIFE_80DOD = 5000;
                                             DOD_EXPONENT = 1.1;
                                             CALENDAR_FADE_ANNUAL = 0.018;
                                             TEMP_SENSITIVITY_CYCLE = 0.04;
                                             TEMP_SENSITIVITY_CAL = 0.045;
                                     
                                         else % Na-ion
-                                            CYCLE_LIFE_80DOD = 3000;  % Middle range (1000-3000 cycles from literature)
+                                            CYCLE_LIFE_80DOD = 4000;  
                                             DOD_EXPONENT = 1.2;  % Steeper degradation curve
                                             CALENDAR_FADE_ANNUAL = 0.01;  % Lower calendar aging (safer chemistry, less prone to thermal runaway)
                                             TEMP_SENSITIVITY_CYCLE = 0.025;  % LOW temp sensitivity - KEY ADVANTAGE of Na-ion!
@@ -706,7 +705,7 @@ function full_main()
                                                                 n_b_initial, C_if, C_PV, C_b, C_IL, ssn_val, yr_idx, current_irr, peak);
                                                             
                                                             % Store pk values (only once per season)
-                                                            if event_scenario_idx == 1
+                                                            if event_scenario_idx == 4
                                                                 pk_per_bus_per_season_per_year(:, season_idx, yr_idx) = pk_per_bus;
                                                             end
                                                             
@@ -735,7 +734,7 @@ function full_main()
                                                                         if C_IL(bus, h) > 0
                                                                             il_idx = (bus-2)*5 + 6;
                                                                             dr_performance_revenue_day = dr_performance_revenue_day + ...
-                                                                                abs(dspt(il_idx, h)) * C_IL(bus, h);
+                                                                                abs(dspt(il_idx, h)) * (Sb / 1000) * C_IL(bus, h);
                                                                         end
                                                                     end
                                                                 end
@@ -1187,7 +1186,7 @@ function full_main()
     % Close the file
     fclose(fid);
     % Write per-bus worst-case PK values to separate CSV file
-    pk_filename = 'pk_per_bus_simple_full_TX.csv';
+    pk_filename = 'pk_per_bus_simple_full_CA.csv';
     fid_pk = fopen(pk_filename, 'w');
     
     % Write CSV header for per-bus worst-case PK values`

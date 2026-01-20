@@ -117,7 +117,7 @@ function full_main_rainflow()
     peak_values = [0.01, 0.1, 1, 10];
     
     % Create the consolidated output file
-    consolidated_filename = 'rainflow_full_CA.csv';
+    consolidated_filename = 'rainflow_full_CA_v2.csv';
     fid = fopen(consolidated_filename, 'w');
     
     % Write header for consolidated CSV
@@ -681,8 +681,8 @@ function full_main_rainflow()
                                                                 P_invM, Q_invM, P_RChM, P_DChM, E_M_current, E_mt_current_season, ...
                                                                 n_b_initial, C_if, C_PV, C_b, C_IL, ssn_val, yr_idx, current_irr, peak);
                                                             
-                                                            % Store pk values (only once per season)
-                                                            if event_scenario_idx == 1
+                                                            % Store pk values (only once per season for the worst (no DR) scenario)
+                                                            if event_scenario_idx == 4
                                                                 pk_per_bus_per_season_per_year(:, season_idx, yr_idx) = pk_per_bus;
                                                             end
                                                             
@@ -774,9 +774,9 @@ function full_main_rainflow()
                                                             
                                                         
                                                             % ================================================================
-                                                            % RAINFLOW DEGRADATION (ONLY ONCE - FIRST SCENARIO)
+                                                            % RAINFLOW DEGRADATION 
                                                             % ================================================================
-                                                            if event_scenario_idx == 1
+                                                            if event_scenario_idx == 4
                                                                 for bus = 2:10
                                                                     if E_M_initial(bus) > 0
                                                                         discharge_idx = (bus-2)*5 + 4;
@@ -1370,14 +1370,14 @@ function degradation_factor = calculate_enhanced_degradation(cycles, E_M_capacit
 
     % === BATTERY PARAMETERS (identical to simple method) ===
     if strcmp(battery_type, 'Li-ion')
-        CYCLE_LIFE_80DOD = 4500;
+        CYCLE_LIFE_80DOD = 5000;
         DOD_EXPONENT = 1.1;
         CALENDAR_FADE_ANNUAL = 0.018;
         TEMP_SENSITIVITY_CYCLE = 0.04;
         TEMP_SENSITIVITY_CAL = 0.045;
 
     else % Na-ion
-        CYCLE_LIFE_80DOD = 3000;  % Middle range (1000-3000 cycles from literature)
+        CYCLE_LIFE_80DOD = 4000;  
         DOD_EXPONENT = 1.2;  % Steeper degradation curve
         CALENDAR_FADE_ANNUAL = 0.01;  % Lower calendar aging (safer chemistry, less prone to thermal runaway)
         TEMP_SENSITIVITY_CYCLE = 0.025;  % LOW temp sensitivity - KEY ADVANTAGE of Na-ion!
