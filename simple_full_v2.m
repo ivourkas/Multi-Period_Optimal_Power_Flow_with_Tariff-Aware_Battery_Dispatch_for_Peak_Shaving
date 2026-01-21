@@ -1031,17 +1031,7 @@ function full_main()
                                                     end
                                                 end
                                                
-                                                % Check replacements
-                                                season_bus_replacements = zeros(10, 1);
-                                                for i = 2:10
-                                                    if E_M_initial(i) > 0 && E_M_current(i) < E_ret(i)
-                                                        replacements(i) = replacements(i) + 1;
-                                                        season_bus_replacements(i) = 1;
-                                                        E_M_current(i) = E_M_initial(i);
-                                                        E_mt_current(i) = 0.5 * E_M_initial(i);
-                                                        cum_degradation_simple(i) = 0;  % Reset degradation
-                                                    end
-                                                end
+                                                
                                                 
                                                 % Ensure capacity doesn't go below retirement threshold
                                                 for i = 2:10
@@ -1049,23 +1039,15 @@ function full_main()
                                                     E_mt_current(i) = max(0, min(E_mt_current(i), E_M_current(i)));
                                                 end
                                                 
-                                                % Calculate total replacements for this season
-                                                season_replacements(season_idx, yr_idx) = sum(season_bus_replacements);
-                                                
-                                                % Update annual totals for current year
-                                                annual_fval(yr_idx) = annual_fval(yr_idx) + cur_season_fval;
-                                                annual_ldl(yr_idx) = annual_ldl(yr_idx) + cur_season_ldl;
-                                                annual_btr(yr_idx) = annual_btr(yr_idx) + cur_season_btr;
-                                                annual_replacements(yr_idx) = annual_replacements(yr_idx) + sum(season_bus_replacements);
-                                                
+                                             
                                                 % Update 10-year totals
                                                 total_fval = total_fval + cur_season_fval;
                                                 total_ldl = total_ldl + cur_season_ldl;
                                                 total_btr = total_btr + cur_season_btr;
                                             end
                                             % Print yearly results for current simulation
-                                            fprintf('Simulation %d - Year %d: Fval=%.2f, Replacements=%d\n', ...
-                                            round(sim_count), yr_idx, annual_fval(yr_idx), round(annual_replacements(yr_idx)));
+                                            fprintf('Simulation %d - Year %d: Fval=%.2f\n', ...
+                                            round(sim_count), yr_idx, annual_fval(yr_idx));
                                         end
                                         
                                         % Calculate total battery replacements over 10 years
